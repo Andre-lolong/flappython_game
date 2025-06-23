@@ -35,8 +35,8 @@ ground_scroll_spd = 2
 
 # Base class for game objects 
 class GameObject:
-    def __init__(self, x):
-        self.x = x
+    def __init__(self, x_value):
+        self.x_value = x_value
 
     def update(self):
         pass
@@ -45,43 +45,43 @@ class GameObject:
         pass
 
 class Player(GameObject):
-    def __init__(self, x, y):
-        super().__init__(x) 
-        self.y = y
+    def __init__(self, x_value, y_value):
+        super().__init__(x_value) 
+        self.y_value = y_value
         self.velocity = 0
-        self.rect = pygame.Rect(self.x, self.y, player_img.get_width(), player_img.get_height())
+        self.rect = pygame.Rect(self.x_value, self.y_value, player_img.get_width(), player_img.get_height())
 
     def jump(self):
         self.velocity = -10
 
     def update(self):
         self.velocity += 0.75
-        self.y += self.velocity
-        self.rect.y = self.y 
+        self.y_value += self.velocity
+        self.rect.y = self.y_value
 
     def draw(self):
-        screen.blit(player_img, (self.x, self.y))
+        screen.blit(player_img, (self.x_value, self.y_value))
 
 class Pipe(GameObject):
-    def __init__(self, x, height, gap, velocity):
-        super().__init__(x)
+    def __init__(self, x_value, height, gap, velocity):
+        super().__init__(x_value)
         self.height = height
         self.gap = gap
         self.velocity = velocity
         self.scored = False
-        self.top_pipe_rect = pygame.Rect(self.x, 0, pipe_down_img.get_width(), self.height)
-        self.bottom_pipe_rect = pygame.Rect(self.x, self.height + self.gap, pipe_up_img.get_width(), window_h - (self.height + self.gap))
+        self.top_pipe_rect = pygame.Rect(self.x_value, 0, pipe_down_img.get_width(), self.height)
+        self.bottom_pipe_rect = pygame.Rect(self.x_value, self.height + self.gap, pipe_up_img.get_width(), window_h - (self.height + self.gap))
 
     def update(self):
-        self.x -= self.velocity
-        self.top_pipe_rect.x = self.x
-        self.bottom_pipe_rect.x = self.x
+        self.x_value -= self.velocity
+        self.top_pipe_rect.x = self.x_value
+        self.bottom_pipe_rect.x = self.x_value
 
     def draw(self):
         # Draw top pipe
-        screen.blit(pipe_down_img, (self.x, 0 - pipe_down_img.get_height() + self.height))
+        screen.blit(pipe_down_img, (self.x_value, 0 - pipe_down_img.get_height() + self.height))
         # Draw bottom pipe
-        screen.blit(pipe_up_img, (self.x, self.height + self.gap))
+        screen.blit(pipe_up_img, (self.x_value, self.height + self.gap))
 
 def scoreboard():
     show_score = font.render(str(score), True, (10, 40, 9))
@@ -125,7 +125,7 @@ def game():
                         has_moved = False
                         pygame.mixer.Sound.play(slap_sfx)
 
-                if player.y < -64 or player.y > 536:
+                if player.y_value < -64 or player.y_value > 536:
                     player = Player(168, 300)
                     pipes = [Pipe(600, random.randint(30, 250), 220, 2.4)]
                     game_objects_to_draw_and_update = [player] + pipes 
@@ -133,14 +133,14 @@ def game():
                     has_moved = False
                     pygame.mixer.Sound.play(slap_sfx)
 
-                if pipes[0].x < -pipe_up_img.get_width():
+                if pipes[0].x_value < -pipe_up_img.get_width():
                     pipes.pop(0)
                     new_pipe = Pipe(400, random.randint(30, 280), 220, 2.4)
                     pipes.append(new_pipe)
                     game_objects_to_draw_and_update.append(new_pipe) 
 
                 for pipe in pipes:
-                    if not pipe.scored and pipe.x + pipe_up_img.get_width() < player.x:
+                    if not pipe.scored and pipe.x_value + pipe_up_img.get_width() < player.x_value:
                         score += 1
                         pygame.mixer.Sound.play(score_sfx)
                         pipe.scored = True
